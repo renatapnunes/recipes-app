@@ -5,6 +5,11 @@ import { Link, useLocation } from 'react-router-dom';
 
 import './RecipeDetailButton.css';
 
+const defaultInProgresStorage = {
+  cocktails: {},
+  meals: {},
+};
+
 function RecipeDetailButton({ type, recipe, recipeID }) {
   const [recipeStatus, setRecipeStatus] = useState('Start');
   const { pathname } = useLocation();
@@ -27,7 +32,12 @@ function RecipeDetailButton({ type, recipe, recipeID }) {
       });
 
     setIngredientsEMeasuresList(ingredientsList
-      .map((ingredient, index) => `${ingredient[1]} - ${measuresList[index]}`));
+      .map((ingredient, index) => (
+        {
+          ingredient: `${ingredient[1]} - ${measuresList[index]}`,
+          done: false,
+        }
+      )));
   }, [recipe]);
 
   const verifyItsDone = (recipeIsDone) => {
@@ -38,7 +48,8 @@ function RecipeDetailButton({ type, recipe, recipeID }) {
 
   useEffect(() => {
     const verifyIsInProgress = () => {
-      const inProgressStorage = JSON.parse(localStorage.getItem('inProgressRecipes'));
+      const inProgressStorage = JSON
+        .parse(localStorage.getItem('inProgressRecipes')) || defaultInProgresStorage;
       const doneStorage = JSON.parse(localStorage.getItem('doneRecipes'));
       if (inProgressStorage !== null && inProgressStorage.cocktails[recipeID]) {
         setRecipeStatus('Continue');
